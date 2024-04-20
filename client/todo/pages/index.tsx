@@ -1,32 +1,15 @@
 import React, { useEffect, useState } from 'react'
+import Todo from './todo'
+import AddTask from './addTask'
 
 function Index() {
-
-  const [message, setMessage] = useState("Loading");
-  const [people, setPeople] = useState([]);
-
-  useEffect(() => {
-    fetch("http://localhost:8080/api/home").then(
-      response => response.json()
-    ).then((data) => {
-        // message = loading
-        // once data is retrieved
-        // message = data.message
-        setMessage(data.message);
-        setPeople(data.people);
-        console.log(data.people);
-      }
-    )
-  }, []);
-
   return (
     <div>
-      <div>{message}</div>
-    {people.map((person, index) => (
-        <div key={index}>{index} {person}</div>
-    ))}
+      <h1>Task List</h1>
+      <Todo/>
+      <AddTask/>
     </div>
-  );
+  )
 }
 
 export default Index
