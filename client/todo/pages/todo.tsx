@@ -1,19 +1,27 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 
 function Todo() {
     const [tasks, setTasks] = useState<any[]>([])
 
-    const fetchTasks = () => {
-        fetch('http://localhost:8080/api/tasks')
-        .then(response => response.json())
-        .then(data => setTasks(data))
-        .catch(error => console.log('error fetching tasks: ', error));
-    };
-
     useEffect(() => {
-        fetchTasks();
-        const intervalId = setInterval(fetchTasks, 5000);
-        return () => clearInterval(intervalId)
+        const socket = new WebSocket('ws://localhost:8080/ws/tasks');
+
+        socket.onopen = () =>{
+            console.log('WebSocket connection established');
+        };
+
+        socket.onmessage = event => {
+            const data = JSON.parse(event.data);
+            setTasks(data);
+        };
+
+        socket.onerror = error => {
+            console.log('WebSocket connection error: ', error)
+        };
+
+        return () => {
+            socket.close();
+        };
     }, []);
 
   return (

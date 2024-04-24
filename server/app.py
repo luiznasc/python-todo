@@ -2,9 +2,11 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
 from flask_cors import CORS
-from datetime import datetime
+from datetime import datetime, time
+from flask_sockets import Sockets
 
 app = Flask(__name__)
+sockets = Sockets(app)
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo.db'
 
@@ -78,6 +80,20 @@ def update(id):
             return jsonify({'message':'error updating task'})
     else:
         return jsonify(task)
+    
+@sockets.route('/ws/tasks')
+def tasks_socket(ws):
+    while not ws.closed:
+        tasks = Todo.query.order_by(Todo.date_created).all()
+        serialized_tasks = []
+        for task in tasks:
+            serialized_tasks.append({
+                'id': task.id,
+                'content': task.content,
+                'date_created': task.date_created.strftime('%Y-%m-%d %H:%M:%S'),
+            })
+        ws.send(jsonify(serialized_tasks))
+        time.sleep(3)
     
 if __name__ == '__main__':
     app.run(debug=True, port=8080)
