@@ -5,7 +5,7 @@ export class UpdateTask {
   render() {
     return (
         <div>
-
+            
         </div>
     )
   }

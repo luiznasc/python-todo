@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react'
-import Todo from './todo'
-import AddTask from './addTask'
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import TodoList from './todo';
+import AddTask from './addTask';
 
-function Index() {
+const App: React.FC<{ tab: string }> = ({tab}) => {
   return (
     <div>
       <h1>Task List</h1>
-      <Todo/>
+      <TodoList/>
       <AddTask/>
     </div>
-  )
-}
+  );
+};
 
-export default Index
+export default App;

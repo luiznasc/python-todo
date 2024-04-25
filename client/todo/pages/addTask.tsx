@@ -29,7 +29,7 @@ function AddTask() {
 
   return (
     <div>
-        <p>Add Task:</p>
+        <div>Add Task:</div>
         <form onSubmit={handleSubmit}>
             <input
             type='text'

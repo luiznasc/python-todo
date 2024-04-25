@@ -2,12 +2,14 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
 from flask_cors import CORS
-from datetime import datetime, time
-from flask_sockets import Sockets
+from datetime import datetime
+import time
+from flask_socketio import SocketIO, emit
+import json
 
 app = Flask(__name__)
-sockets = Sockets(app)
 CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo.db'
 
 db = SQLAlchemy(app)
@@ -29,11 +31,11 @@ def initdb():
 def tasks():
     if request.method == 'POST':
         task_content = request.json.get("content")
-        print(task_content, ' content')
         new_task = Todo(content=task_content)
         try:
             db.session.add(new_task)
             db.session.commit()
+            emit_tasks_data()
             return jsonify({'success': True})
         except SQLAlchemyError as e:
             db.session.rollback()
@@ -81,19 +83,21 @@ def update(id):
     else:
         return jsonify(task)
     
-@sockets.route('/ws/tasks')
-def tasks_socket(ws):
-    while not ws.closed:
-        tasks = Todo.query.order_by(Todo.date_created).all()
-        serialized_tasks = []
-        for task in tasks:
-            serialized_tasks.append({
-                'id': task.id,
-                'content': task.content,
-                'date_created': task.date_created.strftime('%Y-%m-%d %H:%M:%S'),
-            })
-        ws.send(jsonify(serialized_tasks))
-        time.sleep(3)
+@socketio.on('connect', namespace='/tasks')
+def tasks_socket():
+    print("WebSocket client connected to /tasks namespace")
+    emit_tasks_data()
+    # ws.send('hi')
+    # time.sleep(3)
+    
+def emit_tasks_data():
+    tasks = Todo.query.order_by(Todo.date_created).all()
+    serialized_tasks = [{
+        'id': task.id,
+        'content': task.content,
+        'date_created': task.date_created.strftime('%Y-%m-%d %H:%M:%S'),
+    } for task in tasks]
+    socketio.emit('tasks_data', json.dumps(serialized_tasks), namespace='/tasks')
     
 if __name__ == '__main__':
-    app.run(debug=True, port=8080)
+    socketio.run(app, debug=True, port=8080)
