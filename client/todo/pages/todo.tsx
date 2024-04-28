@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import {io, Socket} from 'socket.io-client';
 import Router from 'next/router';
 import DeleteTask from './deleteTask'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
 
 interface Task {
     id: number;
@@ -47,12 +49,16 @@ class TodoList extends Component<{}, State> {
         }
 
         return (
-            <div >
-                <ul>
+            <div style={{ display: 'inline-block', margin: 0, padding: 0 }}>
+                <ul style={{ listStyleType: 'none', padding: 0 }}>
                     {tasks.map(task => (
-                        <li key={task.id}>
-                            {task.id} - {task.content} <DeleteTask task={task}/>
-                            <button type="button" onClick={() => Router.push(`/updateTask/` + task.id)}>update</button>
+                        <li key={task.id} style={{ display: 'table', marginRight: '10px', padding: '7px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <span>{task.id} - {task.content}</span>
+                                <div style={{ marginLeft: '10px', display: 'flex', alignItems: 'center' }}>
+                                    <FontAwesomeIcon icon={faEdit} onClick={() => Router.push(`/updateTask/` + task.id)} style={{ cursor: 'pointer'}}/><DeleteTask task={task}/>
+                                </div>
+                            </div>
                         </li>
                     ))}
                 </ul>

@@ -26,6 +26,16 @@ def initdb():
     db.create_all()
     print('initialized the sqlite database')
 
+@app.route('/api/task/<int:id>', methods=['GET'])
+def getTask(id):
+    task = Todo.query.get_or_404(id)
+    task = {
+        'id': task.id,
+        'content': task.content,
+        'date_created': task.date_created.strftime('%Y-%m-%d %H:%M:%S'),
+    }
+    return task
+
 @app.route('/api/tasks', methods=['POST', 'GET'])
 def tasks():
     if request.method == 'POST':
@@ -84,7 +94,12 @@ def update(id):
         except:
             return jsonify({'message':'error updating task'})
     else:
-        return jsonify(task)
+        task = {
+            'id': task.id,
+            'content': task.content,
+            'date_created': task.date_created.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+        return task
     
 @socketio.on('connect', namespace='/tasks')
 def tasks_socket():

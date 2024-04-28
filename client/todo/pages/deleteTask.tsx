@@ -1,4 +1,6 @@
 import React, { useState, MouseEventHandler, MouseEvent } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 
 interface Task {
@@ -15,7 +17,7 @@ function UpdateTask({ task }: UpdateTaskProps) {
 
   const [content, setTaskContent] = useState<string>(task.content);
 
-  const handleMouseDown = (event: MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleClick = (event: MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
     fetch(`http://localhost:8080/api/delete/${task.id}`, {
       method: 'DELETE',
@@ -34,7 +36,7 @@ function UpdateTask({ task }: UpdateTaskProps) {
   };
   return (
     <div>
-        <button type='submit' onClick={handleMouseDown}>DELETE</button>
+        <FontAwesomeIcon icon={faTrashAlt} onClick={handleClick} style={{ cursor: 'pointer', marginLeft: '5px' }} />
     </div>
   )
 }

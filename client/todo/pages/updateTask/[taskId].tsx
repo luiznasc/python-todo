@@ -21,6 +21,15 @@ function UpdateTask({}: UpdateTaskProps) {
     const id = parseInt(parts[parts.length - 1]);
     if (!isNaN(id)) {
       setTaskId(id);
+      
+      fetch(`http://localhost:8080/api/task/${id}`)
+      .then((response) => response.json())
+      .then((data: Task) => {
+        setTaskContent(data.content);
+      })
+      .catch((err) => {
+        console.error('task fetch error', err);
+      });
     };
   }, []);
 
