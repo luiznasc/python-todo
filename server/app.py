@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
 from flask_cors import CORS
 from datetime import datetime
-import time
 from flask_socketio import SocketIO, emit
 import json
 
@@ -57,27 +56,31 @@ def tasks():
             })
         return jsonify(serialized_tasks)
     
-@app.route('/api/delete/<int:id>')
+@app.route('/api/delete/<int:id>', methods=['DELETE'])
 def delete(id):
     task_to_delete = Todo.query.get_or_404(id)
     
     try:
         db.session.delete(task_to_delete)
         db.session.commit()
-        return
+        emit_tasks_data()
+        return jsonify({
+            'message': 'Task deleted',
+        })
     except:
         return jsonify({
             'message': 'problem deleting task',
         })
     
-@app.route('/api/update/<int:id>', methods=['GET','POST'])
+@app.route('/api/update/<int:id>', methods=['GET','PUT'])
 def update(id):
     task = Todo.query.get_or_404(id)
-    if request.method == 'POST':
-        task.content = request.form['content']
+    if request.method == 'PUT':
+        task.content = request.json.get('content')
         try:
             db.session.commit()
-            return
+            emit_tasks_data()
+            return jsonify({'message':'success'})
         except:
             return jsonify({'message':'error updating task'})
     else:
@@ -87,8 +90,6 @@ def update(id):
 def tasks_socket():
     print("WebSocket client connected to /tasks namespace")
     emit_tasks_data()
-    # ws.send('hi')
-    # time.sleep(3)
     
 def emit_tasks_data():
     tasks = Todo.query.order_by(Todo.date_created).all()

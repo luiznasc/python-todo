@@ -10,7 +10,7 @@ function AddTask() {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-
+    
         fetch('http://localhost:8080/api/tasks', {
             method: 'POST',
             headers: {
@@ -28,9 +28,9 @@ function AddTask() {
     };
 
   return (
-    <div>
+    <div >
         <div>Add Task:</div>
-        <form onSubmit={handleSubmit}>
+        <form className='rounded-lg' onSubmit={handleSubmit}>
             <input
             type='text'
             placeholder='Task name'
