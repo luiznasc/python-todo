@@ -28,9 +28,9 @@ function AddTask() {
     };
 
   return (
-    <div >
-        <div>Add Task:</div>
-        <form className='rounded-lg' onSubmit={handleSubmit}>
+    <div>
+        <div style={{padding: '5px'}}>Add Task:</div>
+        <form onSubmit={handleSubmit}>
             <input
             type='text'
             placeholder='Task name'

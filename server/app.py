@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
 from flask_cors import CORS
 from datetime import datetime
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO
 import json
 
 app = Flask(__name__)
